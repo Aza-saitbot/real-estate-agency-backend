@@ -4,7 +4,7 @@ import {User} from "../users/users.model";
 import {UserRoles} from "./user-roles.model";
 
 interface RoleCreationAttr {
-    name:string
+    value:string
     description:string
 }
 
