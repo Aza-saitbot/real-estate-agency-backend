@@ -17,7 +17,7 @@ export class Role extends Model<Role,RoleCreationAttr>{
 
     @ApiProperty({example:'ADMINISTRATOR',description:'Уникальное значение роли'})
     @Column({type:DataType.STRING,unique:true,allowNull:false})
-    name:string
+    value:string
 
     @ApiProperty({example:'Администратор',description:'Описание роли'})
     @Column({type:DataType.STRING, allowNull:false})
@@ -25,7 +25,4 @@ export class Role extends Model<Role,RoleCreationAttr>{
 
     @BelongsToMany(()=>User,()=>UserRoles)
     users:User[]
-
-
-
 }
