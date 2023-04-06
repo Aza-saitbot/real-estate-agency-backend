@@ -2,12 +2,13 @@ import {Body, Controller, Get, Post, UseGuards, UsePipes } from '@nestjs/common'
 import {UsersService} from './users.service';
 import {CreateUserDto} from "./dto/create-user.dto";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {User} from "./users.model";
+
 import {ValidationPipe} from "../pipes/validation.pipe";
 import {RolesGuard} from "../auth/roles.guard";
 import {Roles} from "../auth/roles-auth.decorator";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
+import {User} from "./users.model";
 
 
 @ApiTags('Пользователи')

@@ -1,10 +1,11 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {User} from "./users.model";
+
 import {CreateUserDto} from "./dto/create-user.dto";
 import {RolesService} from "../roles/roles.service";
 import {BanUserDto} from "./dto/ban-user.dto";
 import {AddRoleDto} from "./dto/add-role.dto";
+import {User} from "./users.model";
 
 
 @Injectable()
@@ -26,8 +27,8 @@ export class UsersService {
         return users
     }
 
-    async getUserByEmail(email:string) {
-        const user = await this.usersRepository.findOne({where:{email},include: {all: true}})
+    async getUserByEmail(email: string) {
+        const user = await this.usersRepository.findOne({where: {email}, include: {all: true}})
         return user
     }
 
@@ -39,14 +40,14 @@ export class UsersService {
             return dto
         }
 
-        throw new HttpException('Пользователь или роль не найден ',HttpStatus.NOT_FOUND)
+        throw new HttpException('Пользователь или роль не найден ', HttpStatus.NOT_FOUND)
 
     }
 
     async ban(dto: BanUserDto) {
         const user = await this.usersRepository.findByPk(dto.userId)
-        if (!user){
-            throw new HttpException('Пользователь не найден ',HttpStatus.NOT_FOUND)
+        if (!user) {
+            throw new HttpException('Пользователь не найден ', HttpStatus.NOT_FOUND)
         }
         user.ban = true
         user.banReason = dto.banReason
