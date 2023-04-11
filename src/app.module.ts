@@ -1,16 +1,23 @@
 import {Module} from "@nestjs/common";
-import {UsersModule} from './users/users.module';
 import {ConfigModule} from "@nestjs/config";
 import {SequelizeModule} from "@nestjs/sequelize";
-import {RolesModule} from "./roles/roles.module";
-import {Role} from "./roles/roles.model";
-import {UserRoles} from "./roles/user-roles.model";
-import {AuthModule} from './auth/auth.module';
-import {PostsModule} from './posts/posts.module';
-import {User} from "./users/users.model";
-import {Post} from "./posts/posts.model";
-import {FilesModule} from './files/files.module';
+import {
+    User,
+    UserRoles,
+    Role,
+    Post,
+    Employee,
+    CategoryEmployee,
+    Category,
+    Basket,
+    Apartment,
+    Image,
+    ApartmentInfo,
+    BasketApartment,
+    Rating
+} from "./models";
 import {ServeStaticModule} from "@nestjs/serve-static";
+import { CategoryModule } from './category/category.module';
 import * as path from "path";
 
 
@@ -31,14 +38,37 @@ import * as path from "path";
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Post],
+            models: [
+                User,
+                UserRoles,
+                Role,
+                Post,
+                Employee,
+                CategoryEmployee,
+                Category,
+                Basket,
+                Apartment,
+                Image,
+                ApartmentInfo,
+                BasketApartment,
+                Rating
+            ],
             autoLoadModels: true
         }),
-        UsersModule,
-        RolesModule,
-        AuthModule,
-        PostsModule,
-        FilesModule,
+        User,
+        UserRoles,
+        Role,
+        Post,
+        Employee,
+        CategoryEmployee,
+        Category,
+        Basket,
+        Apartment,
+        Image,
+        ApartmentInfo,
+        BasketApartment,
+        Rating,
+        CategoryModule
     ],
     exports: []
 })

@@ -3,7 +3,7 @@ import {CreateUserDto} from "../users/dto/create-user.dto";
 import {UsersService} from "../users/users.service";
 import {JwtService} from "@nestjs/jwt";
 import * as bcryptjs from 'bcryptjs'
-import {User} from "../users/users.model";
+import {User} from "../models";
 
 
 @Injectable()
@@ -14,6 +14,7 @@ export class AuthService {
     }
 
     async login(userDto: CreateUserDto) {
+        console.log('userDto',userDto)
         const user = await this.validateUser(userDto)
         return this.generateToken(user)
     }

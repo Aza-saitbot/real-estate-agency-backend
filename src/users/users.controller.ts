@@ -8,14 +8,13 @@ import {RolesGuard} from "../auth/roles.guard";
 import {Roles} from "../auth/roles-auth.decorator";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
-import {User} from "./users.model";
+import {User} from "../models";
 
 
 @ApiTags('Пользователи')
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {
-    }
+    constructor(private readonly usersService: UsersService) {}
 
     @ApiOperation({summary: 'Создание пользователя'})
     @ApiResponse({status: 200, type: User})
