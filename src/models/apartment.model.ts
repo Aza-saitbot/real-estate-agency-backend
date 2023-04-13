@@ -34,12 +34,12 @@ export class Apartment extends Model<Apartment> {
     district: string
 
     @ApiProperty({example: '10.99835602', description: 'геолокация ширина'})
-    @Column({type: DataType.INTEGER, defaultValue: 0})
-    lat: number
+    @Column({type: DataType.STRING, allowNull: false})
+    lat: string
 
     @ApiProperty({example: '77.01502627', description: 'геолокация долгота'})
-    @Column({type: DataType.INTEGER, defaultValue: 0})
-    lng: number
+    @Column({type: DataType.STRING, allowNull: false})
+    lng: string
 
     @ApiProperty({
         example: 'В РАЙОНЕ ТЕДЖЕ МЕБЛИРОВАННАЯ 1+1 С БАССЕЙНОМ И ИНФРАСТРУКТУРОЙ К МОРЮ 350 МЕТРОВ',
@@ -69,7 +69,7 @@ export class Apartment extends Model<Apartment> {
     heatingType: string
 
     @HasMany(() => Image)
-    images: Image[];
+    images: Array<string>;
 
     @ForeignKey(()=>Category)
     @Column({type: DataType.INTEGER})

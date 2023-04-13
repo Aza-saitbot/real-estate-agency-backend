@@ -19,6 +19,12 @@ import {
 import {ServeStaticModule} from "@nestjs/serve-static";
 import { CategoryModule } from './category/category.module';
 import * as path from "path";
+import {AuthModule} from "./auth/auth.module";
+import {RolesModule} from "./roles/roles.module";
+import {UsersModule} from "./users/users.module";
+import {PostsModule} from "./posts/posts.module";
+import { EmployeeModule } from './employee/employee.module';
+import {ApartmentModule} from "./apartment/apartment.module";
 
 
 @Module({
@@ -55,20 +61,13 @@ import * as path from "path";
             ],
             autoLoadModels: true
         }),
-        User,
-        UserRoles,
-        Role,
-        Post,
-        Employee,
-        CategoryEmployee,
-        Category,
-        Basket,
-        Apartment,
-        Image,
-        ApartmentInfo,
-        BasketApartment,
-        Rating,
-        CategoryModule
+        UsersModule,
+        RolesModule,
+        AuthModule,
+        PostsModule,
+        CategoryModule,
+        EmployeeModule,
+        ApartmentModule
     ],
     exports: []
 })
