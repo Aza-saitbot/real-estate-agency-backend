@@ -14,5 +14,5 @@ export class CreateApartmentDto {
     readonly totalFloors:number
     readonly locationFloor:number
     readonly heatingType:string
-    readonly images:string[]
+    apartmentInfos:string
 }

@@ -85,7 +85,7 @@ export class Apartment extends Model<Apartment> {
     @BelongsTo(() => Employee)
     employee: Employee;
 
-    @HasMany(() => ApartmentInfo)
+    @HasMany(() => ApartmentInfo,{as: 'apartmentInfos'})
     apartmentInfos: ApartmentInfo[];
 
     @HasMany(()=>Rating)
