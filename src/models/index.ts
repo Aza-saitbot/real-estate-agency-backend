@@ -13,8 +13,7 @@ import {User} from './users.model';
 import {UserRoles} from './user-roles.model';
 
 
-
-export  {
+export {
     ApartmentInfo,
     Apartment,
     BasketApartment,

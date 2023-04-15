@@ -14,18 +14,17 @@ export class ApartmentService {
 
     async create(dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
 
-        const {apartmentInfos,...createApartmentProps} = dto
+        const {apartmentInfos, ...createApartmentProps} = dto
         const apartment = await this.apartmentRepository.create(createApartmentProps);
-        if (apartmentInfos){
-            const info:ApartmentInfo = JSON.parse(apartmentInfos)
-            if (info){
+        if (apartmentInfos) {
+            const info: ApartmentInfo = JSON.parse(apartmentInfos)
+            if (info) {
                 await ApartmentInfo.create({
                     apartmentId: apartment.id,
                     ...info
                 })
             }
         }
-
 
         const images = await this.fileService.createFiles(files, apartment.id);
 
@@ -67,9 +66,9 @@ export class ApartmentService {
                     as: 'apartmentInfos'
                 },
                 {
-                    model:Image,
+                    model: Image,
                     as: 'images',
-                   attributes: ['filename','id']
+                    attributes: ['filename', 'id']
                 }
             ]
         })

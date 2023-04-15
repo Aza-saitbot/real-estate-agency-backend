@@ -12,15 +12,17 @@ import {Reflector} from "@nestjs/core";
 import {ROLES_KEY} from "./roles-auth.decorator";
 
 @Injectable()
-export class RolesGuard implements CanActivate{
-    constructor(private jwtService:JwtService,
-                private reflector:Reflector) {}
+export class RolesGuard implements CanActivate {
+    constructor(private jwtService: JwtService,
+                private reflector: Reflector) {
+    }
+
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
             context.getHandler(),
             context.getClass(),
         ])
-        if (!requiredRoles){
+        if (!requiredRoles) {
             return true
         }
         const req = context.switchToHttp().getRequest()
@@ -29,8 +31,8 @@ export class RolesGuard implements CanActivate{
             const bearer = authHeader.split(' ')[0]
             const token = authHeader.split(' ')[1]
 
-            if (bearer !== 'Bearer' && !token){
-                throw new UnauthorizedException({message:'Пользователь не авторизован'})
+            if (bearer !== 'Bearer' && !token) {
+                throw new UnauthorizedException({message: 'Пользователь не авторизован'})
             }
 
             const user = this.jwtService.verify(token)
@@ -38,7 +40,7 @@ export class RolesGuard implements CanActivate{
             // если у этого пользователя нет данной роли, то возвращаем false
             return user.roles.some(role => requiredRoles.includes(role.value))
 
-        }catch (e) {
+        } catch (e) {
             throw new HttpException('У пользователя нет доступа', HttpStatus.FORBIDDEN)
         }
     }

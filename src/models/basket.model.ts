@@ -1,5 +1,4 @@
 import {BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table} from "sequelize-typescript";
-;
 import {User} from "./users.model";
 import {BasketApartment} from "./basket-apartment.model";
 

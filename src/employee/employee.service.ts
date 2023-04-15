@@ -11,12 +11,12 @@ export class EmployeeService {
 
     async createEmployee(dto: CreateEmployeeDto) {
 
-            const candidate = await this.employeeRepository.findOne({where: {phone: dto.phone}})
-            if (candidate){
-                throw new HttpException('Сотрудник с таким телефоном уже существует ', HttpStatus.BAD_REQUEST)
-            }
-            const employee = await this.employeeRepository.create(dto);
-            return employee
+        const candidate = await this.employeeRepository.findOne({where: {phone: dto.phone}})
+        if (candidate) {
+            throw new HttpException('Сотрудник с таким телефоном уже существует ', HttpStatus.BAD_REQUEST)
+        }
+        const employee = await this.employeeRepository.create(dto);
+        return employee
 
     }
 

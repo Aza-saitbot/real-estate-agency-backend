@@ -71,23 +71,23 @@ export class Apartment extends Model<Apartment> {
     @HasMany(() => Image)
     images: Array<string>;
 
-    @ForeignKey(()=>Category)
+    @ForeignKey(() => Category)
     @Column({type: DataType.INTEGER})
     categoryId: number
 
     @BelongsTo(() => Category)
     category: Category;
 
-    @ForeignKey(()=>Employee)
+    @ForeignKey(() => Employee)
     @Column({type: DataType.INTEGER})
     employeeId: number
 
     @BelongsTo(() => Employee)
     employee: Employee;
 
-    @HasMany(() => ApartmentInfo,{as: 'apartmentInfos'})
+    @HasMany(() => ApartmentInfo, {as: 'apartmentInfos'})
     apartmentInfos: ApartmentInfo[];
 
-    @HasMany(()=>Rating)
+    @HasMany(() => Rating)
     ratings: Rating[];
 }

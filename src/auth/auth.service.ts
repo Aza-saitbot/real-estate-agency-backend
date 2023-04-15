@@ -14,7 +14,7 @@ export class AuthService {
     }
 
     async login(userDto: CreateUserDto) {
-        console.log('userDto',userDto)
+        console.log('userDto', userDto)
         const user = await this.validateUser(userDto)
         return this.generateToken(user)
     }
@@ -42,9 +42,9 @@ export class AuthService {
     private async validateUser(userDto: CreateUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email)
         const passwordEquals = await bcryptjs.compare(userDto.password, user.password)
-        if (user && passwordEquals){
+        if (user && passwordEquals) {
             return user
         }
-        throw new UnauthorizedException({message:'Не корректный email или password'})
+        throw new UnauthorizedException({message: 'Не корректный email или password'})
     }
 }

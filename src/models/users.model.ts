@@ -39,6 +39,6 @@ export class User extends Model<User, UserCreationAttr> {
     @HasOne(() => Basket)
     basket: Basket
 
-    @HasMany(()=>Rating)
+    @HasMany(() => Rating)
     ratings: Rating[];
 }

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, UseGuards, UsePipes } from '@nestjs/common';
+import {Body, Controller, Get, Post, UseGuards, UsePipes} from '@nestjs/common';
 import {UsersService} from './users.service';
 import {CreateUserDto} from "./dto/create-user.dto";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
@@ -14,7 +14,8 @@ import {User} from "../models";
 @ApiTags('Пользователи')
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) {
+    }
 
     @ApiOperation({summary: 'Создание пользователя'})
     @ApiResponse({status: 200, type: User})
@@ -34,7 +35,7 @@ export class UsersController {
     }
 
     @ApiOperation({summary: 'Выдать роли'})
-    @ApiResponse({status: 200 })
+    @ApiResponse({status: 200})
     @Roles("ADMIN")
     @UseGuards(RolesGuard)
     @Post('role')
@@ -43,7 +44,7 @@ export class UsersController {
     }
 
     @ApiOperation({summary: 'Забанить пользователя'})
-    @ApiResponse({status: 200 })
+    @ApiResponse({status: 200})
     @Roles("ADMIN")
     @UseGuards(RolesGuard)
     @Post('ban')

@@ -9,13 +9,13 @@ export class Employee extends Model<Employee> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
 
-    @Column({type: DataType.STRING, allowNull: false })
+    @Column({type: DataType.STRING, allowNull: false})
     name: string
 
-    @Column({type: DataType.STRING,allowNull: false, unique: true})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     phone: string
 
-    @Column({type: DataType.STRING, allowNull: true })
+    @Column({type: DataType.STRING, allowNull: true})
     username: string
 
     @BelongsToMany(() => Category, () => CategoryEmployee)

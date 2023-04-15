@@ -15,7 +15,7 @@ export interface AttrCreateApartmentInfo {
 }
 
 @Table({tableName: 'apartment_info'})
-export class ApartmentInfo extends Model<ApartmentInfo,AttrCreateApartmentInfo> {
+export class ApartmentInfo extends Model<ApartmentInfo, AttrCreateApartmentInfo> {
 
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
@@ -46,18 +46,18 @@ export class ApartmentInfo extends Model<ApartmentInfo,AttrCreateApartmentInfo> 
     isGarden: boolean
 
     @ApiProperty({example: 'Американская кухня, душ, морозильник', description: 'ВНУТРЕННИЕ ОСОБЕННОСТИ'})
-    @Column({type: DataType.STRING })
+    @Column({type: DataType.STRING})
     InternalFeatures: string
 
     @ApiProperty({example: 'Детская площадка, Сауна, генератор', description: 'ВНЕШНИЕ ОСОБЕННОСТИ'})
-    @Column({type: DataType.STRING })
+    @Column({type: DataType.STRING})
     externalFeatures: string
 
     @ApiProperty({example: 'Рынок, детский сад, банк', description: 'ЭКОЛОГИЧЕСКИЕ ОСОБЕННОСТИ'})
-    @Column({type: DataType.STRING })
+    @Column({type: DataType.STRING})
     environmentalFeatures: string
 
-    @ForeignKey(()=>Apartment)
+    @ForeignKey(() => Apartment)
     @Column({type: DataType.INTEGER})
     apartmentId: number
 

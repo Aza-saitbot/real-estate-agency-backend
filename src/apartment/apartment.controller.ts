@@ -12,7 +12,6 @@ export class ApartmentController {
     constructor(private readonly apartmentService: ApartmentService) {
     }
 
-
     @ApiOperation({summary: 'Создание карточки недвижимости'})
     @ApiResponse({status: 200, type: Apartment})
     @UsePipes(ValidationPipe)
@@ -35,6 +34,4 @@ export class ApartmentController {
     getOne(@Param('id') id: number) {
         return this.apartmentService.getOne(id)
     }
-
-
 }

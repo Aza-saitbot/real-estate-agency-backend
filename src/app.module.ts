@@ -17,13 +17,13 @@ import {
     Rating
 } from "./models";
 import {ServeStaticModule} from "@nestjs/serve-static";
-import { CategoryModule } from './category/category.module';
+import {CategoryModule} from './category/category.module';
 import * as path from "path";
 import {AuthModule} from "./auth/auth.module";
 import {RolesModule} from "./roles/roles.module";
 import {UsersModule} from "./users/users.module";
 import {PostsModule} from "./posts/posts.module";
-import { EmployeeModule } from './employee/employee.module';
+import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
 
 
