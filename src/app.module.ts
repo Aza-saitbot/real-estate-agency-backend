@@ -5,7 +5,6 @@ import {
     User,
     UserRoles,
     Role,
-    Post,
     Employee,
     CategoryEmployee,
     Category,
@@ -22,7 +21,6 @@ import * as path from "path";
 import {AuthModule} from "./auth/auth.module";
 import {RolesModule} from "./roles/roles.module";
 import {UsersModule} from "./users/users.module";
-import {PostsModule} from "./posts/posts.module";
 import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
 
@@ -48,7 +46,6 @@ import {ApartmentModule} from "./apartment/apartment.module";
                 User,
                 UserRoles,
                 Role,
-                Post,
                 Employee,
                 CategoryEmployee,
                 Category,
@@ -64,7 +61,6 @@ import {ApartmentModule} from "./apartment/apartment.module";
         UsersModule,
         RolesModule,
         AuthModule,
-        PostsModule,
         CategoryModule,
         EmployeeModule,
         ApartmentModule

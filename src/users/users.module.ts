@@ -4,13 +4,13 @@ import {UsersController} from './users.controller';
 import {SequelizeModule} from "@nestjs/sequelize";
 import {RolesModule} from "../roles/roles.module";
 import {AuthModule} from "../auth/auth.module";
-import {User, UserRoles, Role, Post} from "../models";
+import {User, UserRoles, Role } from "../models";
 
 @Module({
     controllers: [UsersController],
     providers: [UsersService],
     imports: [
-        SequelizeModule.forFeature([User, Role, UserRoles, Post]),
+        SequelizeModule.forFeature([User, Role, UserRoles ]),
         RolesModule,
         forwardRef(() => AuthModule)
     ],
@@ -19,4 +19,5 @@ import {User, UserRoles, Role, Post} from "../models";
     ]
 })
 export class UsersModule {
+
 }

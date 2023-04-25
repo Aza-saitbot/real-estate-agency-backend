@@ -14,9 +14,12 @@ export class AuthService {
     }
 
     async login(userDto: CreateUserDto) {
-        console.log('userDto', userDto)
-        const user = await this.validateUser(userDto)
-        return this.generateToken(user)
+        try {
+            const user = await this.validateUser(userDto)
+            return this.generateToken(user)
+        } catch (e) {
+            throw new UnauthorizedException('Неверный логин или пароль')
+        }
     }
 
     async registration(userDto: CreateUserDto) {
@@ -33,7 +36,8 @@ export class AuthService {
     }
 
     private async generateToken(user: User) {
-        const payload = {id: user.id, email: user.email, roles: user.roles}
+        const roles =user.roles.map(({value}) => value)
+        const payload = {id: user.id, email: user.email, roles}
         return {
             token: this.jwtService.sign(payload)
         }

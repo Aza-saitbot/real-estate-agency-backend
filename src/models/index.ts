@@ -6,7 +6,6 @@ import {CategoryEmployee} from './category-employee.model';
 import {Category} from './category';
 import {Employee} from './employee.model';
 import {Image} from './image.model';
-import {Post} from './posts.model';
 import {Rating} from './rating.model';
 import {Role} from './roles.model';
 import {User} from './users.model';
@@ -22,7 +21,6 @@ export {
     Category,
     Employee,
     Image,
-    Post,
     Rating,
     Role,
     User,

@@ -1,6 +1,6 @@
 import {BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
-import {Basket, Post, Rating, Role, UserRoles} from "../models";
+import {Basket, Rating, Role, UserRoles} from "../models";
 
 interface UserCreationAttr {
     email: string
@@ -22,23 +22,13 @@ export class User extends Model<User, UserCreationAttr> {
     @Column({type: DataType.STRING, allowNull: false})
     password: string
 
-    @ApiProperty({example: 'false', description: 'Заблокирован или нет'})
-    @Column({type: DataType.BOOLEAN, defaultValue: false})
-    ban: boolean
-
-    @ApiProperty({example: 'За мат', description: 'Причина блокировки'})
-    @Column({type: DataType.STRING, allowNull: true})
-    banReason: string
-
     @BelongsToMany(() => Role, () => UserRoles)
     roles: Role[]
-
-    @HasMany(() => Post)
-    posts: Post[]
 
     @HasOne(() => Basket)
     basket: Basket
 
     @HasMany(() => Rating)
     ratings: Rating[];
+
 }
