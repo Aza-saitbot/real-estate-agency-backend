@@ -4,10 +4,11 @@ import {CreateUserDto} from "./dto/create-user.dto";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {ValidationPipe} from "../pipes/validation.pipe";
 import {RolesGuard} from "../auth/roles.guard";
-import {Roles} from "../auth/roles-auth.decorator";
+import {Roles} from "../auth/decorators/roles-auth.decorator";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {User} from "../models";
-import {UserOwnerGuard} from "./user-owner.guard";
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import {UserId} from "../auth/decorators/user-id.decorator";
 
 
 
@@ -15,6 +16,12 @@ import {UserOwnerGuard} from "./user-owner.guard";
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {
+    }
+
+    @Get('me')
+    @UseGuards(JwtAuthGuard)
+    getMe(@UserId() userId: number) {
+        return this.usersService.getOne(userId)
     }
 
     @ApiOperation({summary: 'Создание пользователя'})
@@ -47,6 +54,8 @@ export class UsersController {
             throw new HttpException('Пользователь не найден ', HttpStatus.NOT_FOUND)
         }
     }
+
+
 
     @ApiOperation({summary: 'Выдать роли'})
     @ApiResponse({status: 200})
