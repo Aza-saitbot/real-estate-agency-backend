@@ -47,19 +47,22 @@ export class UsersService {
             }else {
                 throw new HttpException('Пользователь или роль не найден ', HttpStatus.NOT_FOUND)
             }
-
         }
 
     async getOne(id: number) {
         try {
-            const user = await this.usersRepository.findOne({where: {id},
+            const user = await this.usersRepository.findByPk(id,{
                 include: [
                     {
                         model: Role,
                         as: 'roles',
                         attributes: ['value']
                     }
-                ]
+                ],
+                attributes: {
+                    exclude: ['password', 'createdAt', 'updatedAt'],
+                },
+
             })
             return user
         } catch (e) {

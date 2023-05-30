@@ -18,7 +18,10 @@ export class AuthService {
             const user = await this.validateUser(userDto)
             return this.generateToken(user)
         } catch (e) {
-            throw new UnauthorizedException('Неверный логин или пароль')
+            throw new UnauthorizedException({
+                message: 'Неверный логин или пароль',
+                code: 2
+            })
         }
     }
 

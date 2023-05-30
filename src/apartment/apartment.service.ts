@@ -34,21 +34,7 @@ export class ApartmentService {
     }
 
     async getAll(query: QueryGetApartmentDto) {
-        // client:getServerSideProps
-        // const {categoryId, employeeId, page = 1, limit = 9} = query
-        // const offset = page * limit - limit
-        // const where: { categoryId?: number, employeeId?: number } = {}
-        //
-        // if (categoryId && !employeeId) {
-        //     where.categoryId = categoryId
-        // }
-        // if (!categoryId && employeeId) {
-        //     where.employeeId = employeeId
-        // }
-        // if (categoryId && employeeId) {
-        //     where.employeeId = employeeId
-        //     where.categoryId = categoryId
-        // }
+
         const apartments = await this.apartmentRepository.findAll({
             include: [
                 {
@@ -84,3 +70,19 @@ export class ApartmentService {
         return apartment
     }
 }
+
+// client:getServerSideProps
+// const {categoryId, employeeId, page = 1, limit = 9} = query
+// const offset = page * limit - limit
+// const where: { categoryId?: number, employeeId?: number } = {}
+//
+// if (categoryId && !employeeId) {
+//     where.categoryId = categoryId
+// }
+// if (!categoryId && employeeId) {
+//     where.employeeId = employeeId
+// }
+// if (categoryId && employeeId) {
+//     where.employeeId = employeeId
+//     where.categoryId = categoryId
+// }
