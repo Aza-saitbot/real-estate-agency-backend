@@ -20,7 +20,7 @@ export class AuthService {
         } catch (e) {
             throw new UnauthorizedException({
                 message: 'Неверный логин или пароль',
-                code: 2
+                error_code: 2
             })
         }
     }

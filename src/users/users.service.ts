@@ -20,7 +20,10 @@ export class UsersService {
             user.roles = [role]
             return user
         }catch (e) {
-            throw new HttpException('Ошибка на стороне сервера ', HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException({
+                message: 'Пользователь с таким email уже существует',
+                error_code: 2
+            }, HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -29,7 +32,10 @@ export class UsersService {
             const users = await this.usersRepository.findAll({include: {all: true}})
             return users
         } catch (e) {
-            throw new HttpException('Пользователи не найдены ', HttpStatus.NOT_FOUND)
+            throw new HttpException({
+                message: 'Пользователи не найдены',
+                error_code: 3
+            }, HttpStatus.NOT_FOUND)
         }
     }
 
@@ -45,7 +51,10 @@ export class UsersService {
             await user.$add('roles', [role.id])
             return user
             }else {
-                throw new HttpException('Пользователь или роль не найден ', HttpStatus.NOT_FOUND)
+                throw new HttpException({
+                    message: 'Пользователь или роль не найдены',
+                    error_code: 4
+                }, HttpStatus.NOT_FOUND)
             }
         }
 
@@ -66,7 +75,10 @@ export class UsersService {
             })
             return user
         } catch (e) {
-            throw new HttpException('Пользователь с таким айди не найден ', HttpStatus.NOT_FOUND)
+            throw new HttpException({
+                message: 'Пользователь не найден',
+                error_code: 5
+            }, HttpStatus.NOT_FOUND)
         }
     }
 }

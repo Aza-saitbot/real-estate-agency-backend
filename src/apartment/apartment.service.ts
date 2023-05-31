@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {Apartment, ApartmentInfo, Image} from "../models";
 import {CreateApartmentDto} from "./dto/create-apartment.dto";
 import {InjectModel} from "@nestjs/sequelize";
@@ -15,59 +15,87 @@ export class ApartmentService {
     async create(dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
 
         const {apartmentInfos, ...createApartmentProps} = dto
-        const apartment = await this.apartmentRepository.create(createApartmentProps);
-        if (apartmentInfos) {
-            const info: ApartmentInfo = JSON.parse(apartmentInfos)
-            if (info) {
-                await ApartmentInfo.create({
-                    apartmentId: apartment.id,
-                    ...info
-                })
+        try {
+            const apartment = await this.apartmentRepository.create(createApartmentProps);
+            if (apartmentInfos) {
+                const info: ApartmentInfo = JSON.parse(apartmentInfos)
+                if (info) {
+                    await ApartmentInfo.create({
+                        apartmentId: apartment.id,
+                        ...info
+                    })
+                }
             }
+
+            const images = await this.fileService.createFiles(files, apartment.id);
+
+            apartment.images = images;
+            await apartment.save();
+            return apartment;
+        }catch (e) {
+            throw new HttpException({
+                message: 'Ошибка при создании апартамента',
+                error_code: 6
+            }, HttpStatus.NOT_FOUND)
         }
-
-        const images = await this.fileService.createFiles(files, apartment.id);
-
-        apartment.images = images;
-        await apartment.save();
-        return apartment;
     }
 
     async getAll(query: QueryGetApartmentDto) {
 
-        const apartments = await this.apartmentRepository.findAll({
-            include: [
-                {
-                    model: ApartmentInfo,
-                    as: 'apartmentInfos'
-                },
-                {
-                    model: Image,
-                    as: 'images',
-                    attributes: ['filename', 'id']
-                }
-            ]
-        })
-        return apartments
+        try {
+            const apartments = await this.apartmentRepository.findAll({
+                include: [
+                    {
+                        model: ApartmentInfo,
+                        as: 'apartmentInfos'
+                    },
+                    {
+                        model: Image,
+                        as: 'images',
+                        attributes: ['filename', 'id']
+                    }
+                ]
+            })
+            return apartments
+        }catch (e) {
+            throw new HttpException({
+                message: 'Ошибка при получении апартаментов',
+                error_code: 7
+            }, HttpStatus.NOT_FOUND)
+        }
     }
 
 
     async getOne(id: number) {
-        const apartment = await this.apartmentRepository.findOne({
-            where: {id},
-            include: [
-                {
-                    model: ApartmentInfo,
-                    as: 'apartmentInfos'
-                },
-                {
-                    model: Image,
-                    as: 'images',
-                    attributes: ['filename', 'id']
-                }
-            ]
-        })
-        return apartment
+        try {
+            console.log('VVVVVVVVVVVVVVv',id)
+            const apartment = await this.apartmentRepository.findOne({
+                where: {id},
+                include: [
+                    {
+                        model: ApartmentInfo,
+                        as: 'apartmentInfos'
+                    },
+                    {
+                        model: Image,
+                        as: 'images',
+                        attributes: ['filename', 'id']
+                    }
+                ]
+            })
+            if (!apartment) {
+                throw new HttpException({
+                    message: 'Апартамент не найден',
+                    error_code: 9
+                }, HttpStatus.NOT_FOUND)
+            }
+            return apartment
+        }catch (e) {
+            throw new HttpException({
+                message: 'Ошибка при получении апартамента',
+                error_code: 8
+            }, HttpStatus.NOT_FOUND)
+        }
     }
 }
 
