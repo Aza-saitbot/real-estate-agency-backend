@@ -21,52 +21,9 @@ export class Apartment extends Model<Apartment> {
     @Column({type: DataType.INTEGER, allowNull: false, defaultValue: 0})
     price: number
 
-    @ApiProperty({example: 'Mersin', description: 'Название провинции'})
+    @ApiProperty({example: 'Mersin,Mezitli,Deniz Mah', description: 'Адрес'})
     @Column({type: DataType.STRING, allowNull: false, defaultValue: 'Mersin'})
-    provinces: string
-
-    @ApiProperty({example: 'Mezitli', description: 'Название округа'})
-    @Column({type: DataType.STRING, allowNull: false})
-    county: string
-
-    @ApiProperty({example: 'Deniz Mah', description: 'Название района'})
-    @Column({type: DataType.STRING, allowNull: false})
-    district: string
-
-    @ApiProperty({example: '10.99835602', description: 'геолокация ширина'})
-    @Column({type: DataType.STRING, allowNull: false})
-    lat: string
-
-    @ApiProperty({example: '77.01502627', description: 'геолокация долгота'})
-    @Column({type: DataType.STRING, allowNull: false})
-    lng: string
-
-    @ApiProperty({
-        example: 'В РАЙОНЕ ТЕДЖЕ МЕБЛИРОВАННАЯ 1+1 С БАССЕЙНОМ И ИНФРАСТРУКТУРОЙ К МОРЮ 350 МЕТРОВ',
-        description: 'Описание апартамента'
-    })
-    @Column({type: DataType.STRING, allowNull: false})
-    description: string
-
-    @ApiProperty({example: '1+1', description: 'Количество комнат'})
-    @Column({type: DataType.STRING, allowNull: false})
-    totalRooms: string
-
-    @ApiProperty({example: '120', description: 'Общий площадь апартамента - Брутто'})
-    @Column({type: DataType.INTEGER, allowNull: false})
-    totalArea: number
-
-    @ApiProperty({example: 12, description: 'Количество этажей дома'})
-    @Column({type: DataType.INTEGER, allowNull: false})
-    totalFloors: number
-
-    @ApiProperty({example: '2', description: 'Этаж апартамента'})
-    @Column({type: DataType.INTEGER, allowNull: false})
-    locationFloor: number
-
-    @ApiProperty({example: 'Природный газ (комбинированный)', description: 'Тип разогрева'})
-    @Column({type: DataType.STRING, allowNull: true})
-    heatingType: string
+    address: string
 
     @HasMany(() => Image)
     images: Array<string>;
@@ -87,7 +44,4 @@ export class Apartment extends Model<Apartment> {
 
     @HasMany(() => ApartmentInfo, {as: 'apartmentInfos'})
     apartmentInfos: ApartmentInfo[];
-
-    @HasMany(() => Rating)
-    ratings: Rating[];
 }

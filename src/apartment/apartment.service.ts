@@ -40,15 +40,14 @@ export class ApartmentService {
         }
     }
 
-    async getAll(query: QueryGetApartmentDto) {
-
+    async getAll() {
         try {
             const apartments = await this.apartmentRepository.findAll({
                 include: [
-                    {
-                        model: ApartmentInfo,
-                        as: 'apartmentInfos'
-                    },
+                //     {
+                //         model: ApartmentInfo,
+                //         as: 'apartmentInfos'
+                //     },
                     {
                         model: Image,
                         as: 'images',
@@ -68,14 +67,13 @@ export class ApartmentService {
 
     async getOne(id: number) {
         try {
-            console.log('VVVVVVVVVVVVVVv',id)
             const apartment = await this.apartmentRepository.findOne({
                 where: {id},
                 include: [
-                    {
-                        model: ApartmentInfo,
-                        as: 'apartmentInfos'
-                    },
+                    // {
+                    //     model: ApartmentInfo,
+                    //     as: 'apartmentInfos'
+                    // },
                     {
                         model: Image,
                         as: 'images',
@@ -99,6 +97,7 @@ export class ApartmentService {
     }
 }
 
+// query: QueryGetApartmentDto
 // client:getServerSideProps
 // const {categoryId, employeeId, page = 1, limit = 9} = query
 // const offset = page * limit - limit

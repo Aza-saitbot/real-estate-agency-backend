@@ -24,8 +24,9 @@ export class ApartmentController {
     @ApiOperation({summary: 'Получить все карточки недвижимости'})
     @ApiResponse({status: 200, type: [Apartment]})
     @Get()
-    getAll(@Query() query: QueryGetApartmentDto) {
-        return this.apartmentService.getAll(query)
+    // @Query() query: QueryGetApartmentDto
+    getAll() {
+        return this.apartmentService.getAll()
     }
 
     @ApiOperation({summary: 'Получить карточку недвижимости'})
