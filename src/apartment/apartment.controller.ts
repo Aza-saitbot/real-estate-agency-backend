@@ -1,11 +1,10 @@
-import {Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors, UsePipes} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors, UsePipes} from '@nestjs/common';
 import {ApartmentService} from './apartment.service';
 import {ApiOperation, ApiResponse} from "@nestjs/swagger";
 import {Apartment} from "../models";
 import {ValidationPipe} from "../pipes/validation.pipe";
-import {FilesInterceptor} from "@nestjs/platform-express";
 import {CreateApartmentDto} from "./dto/create-apartment.dto";
-import {QueryGetApartmentDto} from "./dto/query-get-apartment.dto";
+import {FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
 
 @Controller('apartment')
 export class ApartmentController {
@@ -35,4 +34,12 @@ export class ApartmentController {
     getOne(@Param('id') id: number) {
         return this.apartmentService.getOne(id)
     }
+
+    @Post('upload')
+    @UseInterceptors(FilesInterceptor('images'))
+    upload(@UploadedFiles() files) {
+        return this.apartmentService.preview(files)
+    }
+
+
 }

@@ -95,6 +95,19 @@ export class ApartmentService {
             }, HttpStatus.NOT_FOUND)
         }
     }
+
+    async preview(files: Express.Multer.File[]) {
+        try {
+            const images = await this.fileService.createFiles(files);
+console.log('images',images)
+            return images
+        }catch (e) {
+            throw new HttpException({
+                message: 'Ошибка при получении предварительных изображений',
+                error_code: 6
+            }, HttpStatus.NOT_FOUND)
+        }
+    }
 }
 
 // query: QueryGetApartmentDto

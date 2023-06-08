@@ -1,28 +1,28 @@
-import {Module} from "@nestjs/common";
+import {MiddlewareConsumer, Module, NestModule} from "@nestjs/common";
 import {ConfigModule} from "@nestjs/config";
 import {SequelizeModule} from "@nestjs/sequelize";
 import {
-    User,
-    UserRoles,
-    Role,
-    Employee,
-    CategoryEmployee,
-    Category,
-    Basket,
     Apartment,
-    Image,
     ApartmentInfo,
+    Basket,
     BasketApartment,
-    Rating
+    Category,
+    CategoryEmployee,
+    Employee,
+    Image,
+    Rating,
+    Role,
+    User,
+    UserRoles
 } from "./models";
-import {ServeStaticModule} from "@nestjs/serve-static";
+
 import {CategoryModule} from './category/category.module';
-import * as path from "path";
 import {AuthModule} from "./auth/auth.module";
 import {RolesModule} from "./roles/roles.module";
 import {UsersModule} from "./users/users.module";
 import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
+import {StaticMiddleware} from "./files/static.middleware";
 
 
 @Module({
@@ -31,9 +31,6 @@ import {ApartmentModule} from "./apartment/apartment.module";
     imports: [
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`,
-        }),
-        ServeStaticModule.forRoot({
-            rootPath: path.resolve(__dirname, 'static'),
         }),
         SequelizeModule.forRoot({
             dialect: 'postgres',
@@ -63,12 +60,15 @@ import {ApartmentModule} from "./apartment/apartment.module";
         AuthModule,
         CategoryModule,
         EmployeeModule,
-        ApartmentModule
+        ApartmentModule,
     ],
     exports: []
 })
-export class AppModule {
 
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(StaticMiddleware).forRoutes('/');
+    }
 }
 
 
