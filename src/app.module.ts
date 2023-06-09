@@ -15,14 +15,14 @@ import {
     User,
     UserRoles
 } from "./models";
-
+import {ServeStaticModule} from "@nestjs/serve-static";
 import {CategoryModule} from './category/category.module';
+import * as path from "path";
 import {AuthModule} from "./auth/auth.module";
 import {RolesModule} from "./roles/roles.module";
 import {UsersModule} from "./users/users.module";
 import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
-import {StaticMiddleware} from "./files/static.middleware";
 
 
 @Module({
@@ -31,6 +31,9 @@ import {StaticMiddleware} from "./files/static.middleware";
     imports: [
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`,
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: path.resolve(__dirname, 'static'),
         }),
         SequelizeModule.forRoot({
             dialect: 'postgres',
@@ -65,10 +68,7 @@ import {StaticMiddleware} from "./files/static.middleware";
     exports: []
 })
 
-export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(StaticMiddleware).forRoutes('/');
-    }
+export class AppModule {
 }
 
 

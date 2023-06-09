@@ -15,6 +15,16 @@ export class ApartmentService {
     async create(dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
 
         const {apartmentInfos, ...createApartmentProps} = dto
+
+        if (files.length === 0) {
+            throw new HttpException(
+                {
+                    message: 'Необходимо загрузить хотя бы один файл',
+                    error_code: 10,
+                },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
         try {
             const apartment = await this.apartmentRepository.create(createApartmentProps);
             if (apartmentInfos) {
@@ -39,6 +49,49 @@ export class ApartmentService {
             }, HttpStatus.NOT_FOUND)
         }
     }
+
+    async update(id: number, dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
+        const { apartmentInfos, ...updateApartmentProps } = dto;
+
+        const apartment = await this.apartmentRepository.findByPk(id);
+
+        if (!apartment) {
+            throw new HttpException(
+                {
+                    message: 'Апартамент не найден',
+                    error_code: 404,
+                },
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        Object.assign(apartment, updateApartmentProps);
+
+        if (apartmentInfos) {
+            const info: ApartmentInfo = JSON.parse(apartmentInfos);
+
+            if (info) {
+                await ApartmentInfo.upsert({
+                    apartmentId: apartment.id,
+                    ...info,
+                });
+            }
+        }
+
+        if (files.length > 0) {
+            const newImages = await this.fileService.createFiles(files, apartment.id);
+
+            // Получить текущие изображения апартамента
+            const currentImages = apartment.images || [];
+
+            // Объединить текущие изображения и новые изображения
+            apartment.images = [...currentImages, ...newImages];
+        }
+
+        await apartment.save();
+        return apartment;
+    }
+
 
     async getAll() {
         try {
@@ -96,18 +149,6 @@ export class ApartmentService {
         }
     }
 
-    async preview(files: Express.Multer.File[]) {
-        try {
-            const images = await this.fileService.createFiles(files);
-console.log('images',images)
-            return images
-        }catch (e) {
-            throw new HttpException({
-                message: 'Ошибка при получении предварительных изображений',
-                error_code: 6
-            }, HttpStatus.NOT_FOUND)
-        }
-    }
 }
 
 // query: QueryGetApartmentDto

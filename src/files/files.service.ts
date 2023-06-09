@@ -11,38 +11,20 @@ export class FilesService {
     constructor(@InjectModel(Image) private readonly imageRepository: typeof Image) {
     }
 
-    async createFiles(files: Express.Multer.File[], apartmentId?: number): Promise<Array<string>> {
-        const previewFileNames = [];
-        const imagesFileNames = [];
-        const previewPath = path.resolve(__dirname, '..', 'static', 'previews');
-        const imagesPath = path.resolve(__dirname, '..', 'static', 'images');
-
-        if (!fs.existsSync(previewPath)) {
-            fs.mkdirSync(previewPath, { recursive: true });
-        }
-
-        if (!fs.existsSync(imagesPath)) {
-            fs.mkdirSync(imagesPath, { recursive: true });
-        }
-
+    async createFiles(files: Express.Multer.File[], apartmentId: number): Promise<Array<string>> {
+        const fileNames = [];
         for (const file of files) {
             const filename = uuidv4() + '.jpg';
-
-            if (apartmentId) {
-                fs.writeFileSync(path.join(imagesPath, filename), file.buffer);
-                imagesFileNames.push(filename);
-                await this.imageRepository.create({ filename, apartmentId });
-            } else {
-                fs.writeFileSync(path.join(previewPath, filename), file.buffer);
-                previewFileNames.push(filename);
+            const filePath = path.resolve(__dirname, '..', 'static');
+            if (!fs.existsSync(filePath)) {
+                fs.mkdirSync(filePath, {recursive: true});
             }
+            fs.writeFileSync(path.join(filePath, filename), file.buffer);
+            fileNames.push(filename);
+            await this.imageRepository.create({filename, apartmentId});
         }
-
-        if (apartmentId) {
-            return imagesFileNames;
-        } else {
-            return previewFileNames;
-        }
+        return fileNames;
     }
+
 
 }

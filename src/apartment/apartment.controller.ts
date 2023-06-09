@@ -35,11 +35,4 @@ export class ApartmentController {
         return this.apartmentService.getOne(id)
     }
 
-    @Post('upload')
-    @UseInterceptors(FilesInterceptor('images'))
-    upload(@UploadedFiles() files) {
-        return this.apartmentService.preview(files)
-    }
-
-
 }
