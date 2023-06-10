@@ -23,6 +23,7 @@ import {RolesModule} from "./roles/roles.module";
 import {UsersModule} from "./users/users.module";
 import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
+import {StaticMiddleware} from "./files/static.middleware";
 
 
 @Module({
@@ -31,9 +32,6 @@ import {ApartmentModule} from "./apartment/apartment.module";
     imports: [
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`,
-        }),
-        ServeStaticModule.forRoot({
-            rootPath: path.resolve(__dirname, 'static'),
         }),
         SequelizeModule.forRoot({
             dialect: 'postgres',
@@ -68,7 +66,10 @@ import {ApartmentModule} from "./apartment/apartment.module";
     exports: []
 })
 
-export class AppModule {
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(StaticMiddleware).forRoutes('/');
+    }
 }
 
 

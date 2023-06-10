@@ -3,7 +3,8 @@ import {Apartment, ApartmentInfo, Image} from "../models";
 import {CreateApartmentDto} from "./dto/create-apartment.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {FilesService} from "../files/files.service";
-import {QueryGetApartmentDto} from "./dto/query-get-apartment.dto";
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class ApartmentService {
@@ -12,86 +13,105 @@ export class ApartmentService {
                 private readonly fileService: FilesService) {
     }
 
-    async create(dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
+    async create(dto: CreateApartmentDto): Promise<Apartment> {
+        const { apartmentInfos,fileNames, ...createApartmentProps } = dto;
 
-        const {apartmentInfos, ...createApartmentProps} = dto
-
-        if (files.length === 0) {
+        if (fileNames.length === 0) {
             throw new HttpException(
                 {
                     message: 'Необходимо загрузить хотя бы один файл',
-                    error_code: 10,
+                    error_code: 6,
                 },
                 HttpStatus.BAD_REQUEST,
             );
         }
+
         try {
             const apartment = await this.apartmentRepository.create(createApartmentProps);
+
             if (apartmentInfos) {
-                const info: ApartmentInfo = JSON.parse(apartmentInfos)
+                const info: ApartmentInfo = JSON.parse(apartmentInfos);
+
                 if (info) {
                     await ApartmentInfo.create({
                         apartmentId: apartment.id,
-                        ...info
-                    })
+                        ...info,
+                    });
                 }
             }
 
-            const images = await this.fileService.createFiles(files, apartment.id);
+            await this.fileService.moveFilesToApartment(fileNames, apartment.id);
 
-            apartment.images = images;
+            apartment.images = fileNames;
             await apartment.save();
+
             return apartment;
-        }catch (e) {
-            throw new HttpException({
-                message: 'Ошибка при создании апартамента',
-                error_code: 6
-            }, HttpStatus.NOT_FOUND)
-        }
-    }
-
-    async update(id: number, dto: CreateApartmentDto, files: Express.Multer.File[]): Promise<Apartment> {
-        const { apartmentInfos, ...updateApartmentProps } = dto;
-
-        const apartment = await this.apartmentRepository.findByPk(id);
-
-        if (!apartment) {
+        } catch (e) {
             throw new HttpException(
                 {
-                    message: 'Апартамент не найден',
-                    error_code: 404,
+                    message: 'Ошибка при создании апартамента',
+                    error_code: 6,
                 },
                 HttpStatus.NOT_FOUND,
             );
         }
-
-        Object.assign(apartment, updateApartmentProps);
-
-        if (apartmentInfos) {
-            const info: ApartmentInfo = JSON.parse(apartmentInfos);
-
-            if (info) {
-                await ApartmentInfo.upsert({
-                    apartmentId: apartment.id,
-                    ...info,
-                });
-            }
-        }
-
-        if (files.length > 0) {
-            const newImages = await this.fileService.createFiles(files, apartment.id);
-
-            // Получить текущие изображения апартамента
-            const currentImages = apartment.images || [];
-
-            // Объединить текущие изображения и новые изображения
-            apartment.images = [...currentImages, ...newImages];
-        }
-
-        await apartment.save();
-        return apartment;
     }
 
+    async update(id: number, dto: CreateApartmentDto): Promise<Apartment> {
+        const { apartmentInfos,fileNames, ...updateApartmentProps } = dto;
+
+        try {
+            const apartment = await this.apartmentRepository.findByPk(id);
+
+            if (!apartment) {
+                throw new HttpException(
+                    {
+                        message: 'Апартамент не найден',
+                        error_code: 6,
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+
+            // Обновляем свойства апартамента
+            Object.assign(apartment, updateApartmentProps);
+            await apartment.save();
+
+            // Обновляем информацию апартамента
+            if (apartmentInfos) {
+                const info: ApartmentInfo = JSON.parse(apartmentInfos);
+
+                if (info) {
+                    const existingInfo = await ApartmentInfo.findOne({ where: { apartmentId: apartment.id } });
+
+                    if (existingInfo) {
+                        Object.assign(existingInfo, info);
+                        await existingInfo.save();
+                    } else {
+                        await ApartmentInfo.create({
+                            apartmentId: apartment.id,
+                            ...info,
+                        });
+                    }
+                }
+            }
+
+            // Обновляем изображения апартамента
+            if (fileNames.length > 0) {
+                await this.fileService.moveFilesToApartment(fileNames, apartment.id);
+            }
+
+            return apartment;
+        } catch (e) {
+            throw new HttpException(
+                {
+                    message: 'Ошибка при обновлении апартамента',
+                    error_code: 6,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 
     async getAll() {
         try {
