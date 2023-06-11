@@ -24,6 +24,7 @@ import {UsersModule} from "./users/users.module";
 import {EmployeeModule} from './employee/employee.module';
 import {ApartmentModule} from "./apartment/apartment.module";
 import {StaticMiddleware} from "./files/static.middleware";
+import {FilesModule} from "./files/files.module";
 
 
 @Module({
@@ -62,6 +63,7 @@ import {StaticMiddleware} from "./files/static.middleware";
         CategoryModule,
         EmployeeModule,
         ApartmentModule,
+        FilesModule
     ],
     exports: []
 })

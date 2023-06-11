@@ -14,6 +14,7 @@ export class ApartmentService {
     }
 
     async create(dto: CreateApartmentDto): Promise<Apartment> {
+        console.log('PROPSSSSSSSSSSSSSSs',dto)
         const { apartmentInfos,fileNames, ...createApartmentProps } = dto;
 
         if (fileNames.length === 0) {
@@ -28,7 +29,7 @@ export class ApartmentService {
 
         try {
             const apartment = await this.apartmentRepository.create(createApartmentProps);
-
+console.log('apartment 44444444',apartment)
             if (apartmentInfos) {
                 const info: ApartmentInfo = JSON.parse(apartmentInfos);
 
@@ -47,6 +48,7 @@ export class ApartmentService {
 
             return apartment;
         } catch (e) {
+            console.log('Ошибка при создании апартамента',e)
             throw new HttpException(
                 {
                     message: 'Ошибка при создании апартамента',

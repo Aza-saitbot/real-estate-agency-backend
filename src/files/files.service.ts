@@ -37,22 +37,24 @@ export class FilesService {
         }
     }
 
-    async moveFilesToApartment(fileNames: string[], apartmentId: number): Promise<void> {
-        const imageFilePath = path.join(__dirname, '..', 'static', 'images');
+    async moveFilesToApartment(images: string[], apartmentId: number): Promise<void> {
+        const previewPath = path.resolve(__dirname, '..', 'static', 'previews');
+        const imagePath = path.resolve(__dirname, '..', 'static', 'images');
 
-        for (const fileName of fileNames) {
-            await this.imageRepository.update(
-                { apartmentId },
-                { where: { filename: fileName } }
-            );
+        if (!fs.existsSync(imagePath)) {
+            fs.mkdirSync(imagePath, { recursive: true });
+        }
 
-            await fs.promises.rename(
-                path.join(imageFilePath, 'previews', fileName),
-                path.join(imageFilePath, fileName)
-            );
+        for (const image of images) {
+            const sourcePath = path.join(previewPath, image);
+            const destinationPath = path.join(imagePath, image);
+
+            fs.copyFileSync(sourcePath, destinationPath);
+            fs.unlinkSync(sourcePath);
+
+            await this.imageRepository.create({ filename: image, apartmentId });
         }
     }
-
     async cleanPreviewFolder(): Promise<void> {
         const previewFolderPath = path.resolve(__dirname, '..', 'static', 'previews');
 
