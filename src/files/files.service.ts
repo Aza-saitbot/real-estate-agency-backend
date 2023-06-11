@@ -16,13 +16,11 @@ export class FilesService {
             const fileNames = [];
             for (const file of files) {
                 const filename = uuidv4() + '.jpg';
-                const previewPath = path.resolve(__dirname, '..', 'static', 'previews');
-
-                if (!fs.existsSync(previewPath)) {
-                    fs.mkdirSync(previewPath, { recursive: true });
+                const filePath = path.resolve(__dirname, '..', 'static');
+                if (!fs.existsSync(filePath)) {
+                    fs.mkdirSync(filePath, {recursive: true});
                 }
-
-                fs.writeFileSync(path.join(previewPath, filename), file.buffer);
+                fs.writeFileSync(path.join(filePath, filename), file.buffer);
                 fileNames.push(filename);
             }
             return fileNames;
@@ -37,26 +35,54 @@ export class FilesService {
         }
     }
 
-    async moveFilesToApartment(images: string[], apartmentId: number): Promise<void> {
-        const previewPath = path.resolve(__dirname, '..', 'static', 'previews');
-        const imagePath = path.resolve(__dirname, '..', 'static', 'images');
-
-        if (!fs.existsSync(imagePath)) {
-            fs.mkdirSync(imagePath, { recursive: true });
-        }
-
+    async createApartment(images: string[], apartmentId: number): Promise<void> {
+        const staticPath = path.resolve(__dirname, '..', 'static');
+console.log('FILE SERVICE = images',images)
         for (const image of images) {
-            const sourcePath = path.join(previewPath, image);
-            const destinationPath = path.join(imagePath, image);
+            const sourcePath = path.join(staticPath, image);
 
-            fs.copyFileSync(sourcePath, destinationPath);
-            fs.unlinkSync(sourcePath);
-
-            await this.imageRepository.create({ filename: image, apartmentId });
+            if (fs.existsSync(sourcePath)) {
+                await this.imageRepository.create({
+                    filename: image,
+                    apartmentId: apartmentId,
+                });
+            }else {
+                return
+            }
         }
     }
+
+    async updateApartment(updatedFiles: string[], apartmentId: number) {
+        const staticPath = path.resolve(__dirname, '..', 'static');
+
+        // Получаем текущий список файлов из imageRepository
+        const existingFiles = await this.imageRepository.findAll({
+            attributes: ['filename'],
+            where: { apartmentId },
+            raw: true,
+        });
+
+        // Находим файлы, которые нужно удалить
+        const filesToRemove = existingFiles.filter(file => !updatedFiles.includes(file.filename));
+
+        // Удаляем файлы, которые больше не нужны
+        filesToRemove.forEach(file => {
+            const filePath = path.join(staticPath, file.filename);
+            fs.unlinkSync(filePath);
+        });
+
+        // Обновляем поле с именами файлов в imageRepository
+        for (const updatedFile of updatedFiles) {
+            await this.imageRepository.update(
+                { filename: updatedFile },
+                { where: { apartmentId: apartmentId } }
+            );
+        }
+    }
+
+
     async cleanPreviewFolder(): Promise<void> {
-        const previewFolderPath = path.resolve(__dirname, '..', 'static', 'previews');
+        const previewFolderPath = path.resolve(__dirname, '..', 'static');
 
         // Получаем список всех файлов в папке превью
         const files = await fs.promises.readdir(previewFolderPath);

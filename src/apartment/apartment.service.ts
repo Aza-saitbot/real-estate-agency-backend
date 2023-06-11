@@ -17,7 +17,7 @@ export class ApartmentService {
         console.log('PROPSSSSSSSSSSSSSSs',dto)
         const { apartmentInfos,fileNames, ...createApartmentProps } = dto;
 
-        if (fileNames.length === 0) {
+        if (fileNames?.length === 0) {
             throw new HttpException(
                 {
                     message: 'Необходимо загрузить хотя бы один файл',
@@ -29,7 +29,7 @@ export class ApartmentService {
 
         try {
             const apartment = await this.apartmentRepository.create(createApartmentProps);
-console.log('apartment 44444444',apartment)
+console.log('apartment',apartment)
             if (apartmentInfos) {
                 const info: ApartmentInfo = JSON.parse(apartmentInfos);
 
@@ -41,7 +41,7 @@ console.log('apartment 44444444',apartment)
                 }
             }
 
-            await this.fileService.moveFilesToApartment(fileNames, apartment.id);
+            await this.fileService.createApartment(fileNames, apartment.id);
 
             apartment.images = fileNames;
             await apartment.save();
@@ -100,7 +100,7 @@ console.log('apartment 44444444',apartment)
 
             // Обновляем изображения апартамента
             if (fileNames.length > 0) {
-                await this.fileService.moveFilesToApartment(fileNames, apartment.id);
+                await this.fileService.updateApartment(fileNames, apartment.id);
             }
 
             return apartment;
