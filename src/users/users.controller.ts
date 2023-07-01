@@ -20,8 +20,8 @@ export class UsersController {
 
     @Get('me')
     @UseGuards(JwtAuthGuard)
-    getMe(@UserId() userId: number) {
-        return this.usersService.getOne(userId)
+    getMe(@UserId() id: number) {
+        return this.usersService.findById(id)
     }
 
     @ApiOperation({summary: 'Создание пользователя'})
@@ -49,7 +49,7 @@ export class UsersController {
     getOne(@Param('id') id: string) {
         console.log('id', id)
         try {
-            return this.usersService.getOne(Number(id))
+            return this.usersService.findById(Number(id))
         } catch (e) {
             throw new HttpException('Пользователь не найден ', HttpStatus.NOT_FOUND)
         }

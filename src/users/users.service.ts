@@ -58,7 +58,7 @@ export class UsersService {
             }
         }
 
-    async getOne(id: number) {
+    async findById(id: number) {
         try {
             const user = await this.usersRepository.findByPk(id,{
                 include: [

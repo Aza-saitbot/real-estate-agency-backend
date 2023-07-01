@@ -4,6 +4,7 @@ import * as path from 'path';
 import {v4 as uuidv4} from 'uuid';
 import {Image} from "../models";
 import {InjectModel} from "@nestjs/sequelize";
+import {Op} from "sequelize";
 
 @Injectable()
 export class FilesService {
@@ -24,7 +25,7 @@ export class FilesService {
                 fileNames.push(filename);
             }
             return fileNames;
-        }catch (e) {
+        } catch (e) {
             throw new HttpException(
                 {
                     message: 'Ошибка при загрузке файлов',
@@ -35,50 +36,71 @@ export class FilesService {
         }
     }
 
-    async createApartment(images: string[], apartmentId: number): Promise<void> {
+    async createApartment(fileNames: string[], apartmentId: number) {
         const staticPath = path.resolve(__dirname, '..', 'static');
-console.log('FILE SERVICE = images',images)
-        for (const image of images) {
-            const sourcePath = path.join(staticPath, image);
+        const images: Array<Image> = []
+
+        for (const filename of fileNames) {
+            const sourcePath = path.join(staticPath, filename);
 
             if (fs.existsSync(sourcePath)) {
-                await this.imageRepository.create({
-                    filename: image,
+                const image = await this.imageRepository.create({
+                    filename,
                     apartmentId: apartmentId,
                 });
-            }else {
-                return
+                images.push(image)
+            } else {
+                throw new HttpException(
+                    {
+                        message: 'Ошибка при создании записи изображения к апартаменту',
+                        error_code: 12,
+                    },
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                );
             }
         }
+        return images
     }
 
-    async updateApartment(updatedFiles: string[], apartmentId: number) {
+    async updateApartment (fileNames: string[], apartmentId: number) {
         const staticPath = path.resolve(__dirname, '..', 'static');
+        const images: Array<Image> = [];
 
-        // Получаем текущий список файлов из imageRepository
-        const existingFiles = await this.imageRepository.findAll({
-            attributes: ['filename'],
-            where: { apartmentId },
-            raw: true,
-        });
+        for (const filename of fileNames) {
+            const sourcePath = path.join(staticPath, filename);
 
-        // Находим файлы, которые нужно удалить
-        const filesToRemove = existingFiles.filter(file => !updatedFiles.includes(file.filename));
+            if (fs.existsSync(sourcePath)) {
+                const [updatedCount] = await this.imageRepository.update(
+                    { filename },
+                    { where: { apartmentId, filename } }
+                );
 
-        // Удаляем файлы, которые больше не нужны
-        filesToRemove.forEach(file => {
-            const filePath = path.join(staticPath, file.filename);
-            fs.unlinkSync(filePath);
-        });
+                if (updatedCount === 0) {
+                    throw new HttpException(
+                        {
+                            message: 'Ошибка при обновлении записи изображения для апартамента',
+                            error_code: 12,
+                        },
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                    );
+                }
 
-        // Обновляем поле с именами файлов в imageRepository
-        for (const updatedFile of updatedFiles) {
-            await this.imageRepository.update(
-                { filename: updatedFile },
-                { where: { apartmentId: apartmentId } }
-            );
+                const updatedImage = await this.imageRepository.findOne({ where: { apartmentId, filename } });
+                images.push(updatedImage);
+            } else {
+                throw new HttpException(
+                    {
+                        message: 'Ошибка при обновлении записи изображения для апартамента',
+                        error_code: 12,
+                    },
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
         }
+
+        return images;
     }
+
 
 
     async cleanPreviewFolder(): Promise<void> {
@@ -89,7 +111,7 @@ console.log('FILE SERVICE = images',images)
 
         // Проверяем каждый файл, чтобы определить, используется ли он
         for (const file of files) {
-            const isUsed = await this.imageRepository.findOne({ where: { filename: file } });
+            const isUsed = await this.imageRepository.findOne({where: {filename: file}});
 
             // Если файл не используется, удаляем его
             if (!isUsed) {
@@ -99,4 +121,9 @@ console.log('FILE SERVICE = images',images)
         }
     }
 
+    async destroy(apartmentId: number[] ) {
+        await this.imageRepository.destroy({
+            where: {apartmentId}
+        });
+    }
 }

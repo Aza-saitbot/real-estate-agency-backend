@@ -4,6 +4,8 @@ export class CreateApartmentDto {
     readonly currency:string
     readonly price:number
     readonly address:string
-    fileNames: string[]
+    readonly employeeId:number
+    readonly categoryId:number
+    images: string[]
     apartmentInfos:string
 }

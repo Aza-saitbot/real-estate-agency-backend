@@ -3,8 +3,7 @@ import {Apartment, ApartmentInfo, Image} from "../models";
 import {CreateApartmentDto} from "./dto/create-apartment.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {FilesService} from "../files/files.service";
-import * as fs from 'fs';
-import * as path from 'path';
+
 
 @Injectable()
 export class ApartmentService {
@@ -14,22 +13,22 @@ export class ApartmentService {
     }
 
     async create(dto: CreateApartmentDto): Promise<Apartment> {
-        console.log('PROPSSSSSSSSSSSSSSs',dto)
-        const { apartmentInfos,fileNames, ...createApartmentProps } = dto;
-
-        if (fileNames?.length === 0) {
-            throw new HttpException(
-                {
-                    message: 'Необходимо загрузить хотя бы один файл',
-                    error_code: 6,
-                },
-                HttpStatus.BAD_REQUEST,
-            );
-        }
 
         try {
+            console.log('CREATE dto',dto)
+            const { apartmentInfos,images, ...createApartmentProps } = dto;
+
+            if (images?.length === 0) {
+                throw new HttpException(
+                    {
+                        message: 'Необходимо загрузить хотя бы один файл',
+                        error_code: 6,
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
             const apartment = await this.apartmentRepository.create(createApartmentProps);
-console.log('apartment',apartment)
+
             if (apartmentInfos) {
                 const info: ApartmentInfo = JSON.parse(apartmentInfos);
 
@@ -41,14 +40,16 @@ console.log('apartment',apartment)
                 }
             }
 
-            await this.fileService.createApartment(fileNames, apartment.id);
+            await this.fileService.createApartment(images, apartment.id);
 
-            apartment.images = fileNames;
+            apartment.images = images
             await apartment.save();
+            
+            console.log('Должны быть здесь лежать с изображениями',apartment)
 
             return apartment;
         } catch (e) {
-            console.log('Ошибка при создании апартамента',e)
+            console.log('ОШИИИБКА ПРИ СОЗДАНИИ АПАРТАМЕНТА',e)
             throw new HttpException(
                 {
                     message: 'Ошибка при создании апартамента',
@@ -60,7 +61,7 @@ console.log('apartment',apartment)
     }
 
     async update(id: number, dto: CreateApartmentDto): Promise<Apartment> {
-        const { apartmentInfos,fileNames, ...updateApartmentProps } = dto;
+        const { apartmentInfos,images, ...updateApartmentProps } = dto;
 
         try {
             const apartment = await this.apartmentRepository.findByPk(id);
@@ -77,7 +78,7 @@ console.log('apartment',apartment)
 
             // Обновляем свойства апартамента
             Object.assign(apartment, updateApartmentProps);
-            await apartment.save();
+            console.log('обновлением свойств',apartment,updateApartmentProps)
 
             // Обновляем информацию апартамента
             if (apartmentInfos) {
@@ -99,9 +100,11 @@ console.log('apartment',apartment)
             }
 
             // Обновляем изображения апартамента
-            if (fileNames.length > 0) {
-                await this.fileService.updateApartment(fileNames, apartment.id);
+            if (images.length > 0) {
+                await this.fileService.updateApartment(images, apartment.id);
             }
+            apartment.images = images
+            await apartment.save();
 
             return apartment;
         } catch (e) {
@@ -109,6 +112,27 @@ console.log('apartment',apartment)
                 {
                     message: 'Ошибка при обновлении апартамента',
                     error_code: 6,
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+
+    async deleteApartments(apartmentIds: number[]): Promise<void> {
+        try {
+            // Удаляем записи изображений, связанные с апартаментами
+            await this.fileService.destroy( apartmentIds );
+
+            // Удаляем записи информации об апартаментах, связанные с апартаментами
+            await ApartmentInfo.destroy({ where: { apartmentId: apartmentIds } });
+
+            // Удаляем апартаменты
+            await this.apartmentRepository.destroy({ where: { id: apartmentIds } });
+        } catch (e) {
+            throw new HttpException(
+                {
+                    message: 'Ошибка при удалении апартаментов',
+                    error_code: 12,
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR,
             );
@@ -126,10 +150,11 @@ console.log('apartment',apartment)
                     {
                         model: Image,
                         as: 'images',
-                        attributes: ['filename', 'id']
+                        attributes: ['filename']
                     }
                 ]
             })
+            console.log('BAAAAACKEND APARTMENTS',apartments)
             return apartments
         }catch (e) {
             throw new HttpException({
@@ -152,7 +177,7 @@ console.log('apartment',apartment)
                     {
                         model: Image,
                         as: 'images',
-                        attributes: ['filename', 'id']
+                        attributes: ['filename']
                     }
                 ]
             })
@@ -170,22 +195,4 @@ console.log('apartment',apartment)
             }, HttpStatus.NOT_FOUND)
         }
     }
-
 }
-
-// query: QueryGetApartmentDto
-// client:getServerSideProps
-// const {categoryId, employeeId, page = 1, limit = 9} = query
-// const offset = page * limit - limit
-// const where: { categoryId?: number, employeeId?: number } = {}
-//
-// if (categoryId && !employeeId) {
-//     where.categoryId = categoryId
-// }
-// if (!categoryId && employeeId) {
-//     where.employeeId = employeeId
-// }
-// if (categoryId && employeeId) {
-//     where.employeeId = employeeId
-//     where.categoryId = categoryId
-// }

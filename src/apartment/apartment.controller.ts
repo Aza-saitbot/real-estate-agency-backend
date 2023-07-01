@@ -6,8 +6,6 @@ import {
     Param,
     Post,
     Put,
-    UploadedFiles,
-    UseInterceptors,
     UsePipes
 } from '@nestjs/common';
 import {ApartmentService} from './apartment.service';
@@ -36,6 +34,13 @@ export class ApartmentController {
         return this.apartmentService.update(id, dto)
     }
 
+    @ApiOperation({summary: 'Удалить карточки недвижимости'})
+    @ApiResponse({status: 200, type: Apartment})
+    @Delete()
+    delete(@Body() dto: number[]) {
+        return this.apartmentService.deleteApartments(dto)
+    }
+
     @ApiOperation({summary: 'Получить все карточки недвижимости'})
     @ApiResponse({status: 200, type: [Apartment]})
     @Get()
@@ -50,8 +55,6 @@ export class ApartmentController {
     getOne(@Param('id') id: number) {
         return this.apartmentService.getOne(id)
     }
-
-
 
 
 }

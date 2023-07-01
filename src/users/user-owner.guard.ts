@@ -17,7 +17,7 @@ export class UserOwnerGuard implements NestMiddleware {
             }
             const user = this.jwtService.verify(token)
             req.user = user
-            console.log('process.env.OWNER_EMAIL',process.env.OWNER_EMAIL)
+
             if (user.email === process.env.OWNER_EMAIL) {
                 req.user.isOwner = true;
             } else {
